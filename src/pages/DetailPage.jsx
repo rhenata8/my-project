@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { getAllCountries } from '../api/countriesAPI';
 import axios from 'axios';
 
 const DetailPage = () => {
@@ -9,15 +10,14 @@ const DetailPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchCountryDetail = async () => {
+    // const fetchCountryDetail = async () => {
+      const fetchCountries = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`https://restcountries.com/v3.1/name/${name}?fullText=true`);
-        setCountry(response.data[0]);
-        setError(null);
-      } catch (err) {
-        setError('Gagal menemukan data negara.');
-        console.error(err);
+        const data = await getAllCountries(); // <-- Gunakan fungsinya di sini
+        setCountries(data);
+      } catch (error) {
+        // Tangani error
       } finally {
         setLoading(false);
       }

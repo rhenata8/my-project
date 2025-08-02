@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CountryCard from '../components/CountryCard';
 import SearchBar from '../components/SearchBar';
+import { getAllCountries } from '../api/countriesAPI';
 
 const HomePage = () => {
   const [countries, setCountries] = useState([]);
@@ -13,12 +14,10 @@ const HomePage = () => {
     const fetchCountries = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('https://restcountries.com/v3.1/all');
-        setCountries(response.data);
-        setError(null);
-      } catch (err) {
-        setError('Gagal memuat data negara. Coba lagi nanti.');
-        console.error(err);
+        const data = await getAllCountries(); // <-- Gunakan fungsinya di sini
+        setCountries(data);
+      } catch (error) {
+        // Tangani error
       } finally {
         setLoading(false);
       }
