@@ -1,7 +1,9 @@
+// src/pages/DetailPage.jsx
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getAllCountries } from '../api/countriesAPI';
-import axios from 'axios';
+// PERBAIKAN: Impor fungsi yang benar
+import { getCountryByName } from '../api/countriesAPI';
 
 const DetailPage = () => {
   const { name } = useParams(); // Mengambil 'name' dari URL
@@ -10,14 +12,16 @@ const DetailPage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // const fetchCountryDetail = async () => {
-      const fetchCountries = async () => {
+    // PERBAIKAN: Logika fetching data untuk halaman detail
+    const fetchCountryDetail = async () => {
       try {
         setLoading(true);
-        const data = await getAllCountries(); // <-- Gunakan fungsinya di sini
-        setCountries(data);
-      } catch (error) {
-        // Tangani error
+        const data = await getCountryByName(name);
+        setCountry(data);
+        setError(null);
+      } catch (err) {
+        console.error(`Error fetching country: ${name}`, err);
+        setError('Gagal menemukan data negara.');
       } finally {
         setLoading(false);
       }
@@ -30,6 +34,11 @@ const DetailPage = () => {
   if (error) return <p className="text-center mt-8 text-red-500">{error}</p>;
   if (!country) return null;
 
+  // Mendapatkan nama native pertama, mata uang, dan bahasa
+  const nativeName = country.name.nativeName ? Object.values(country.name.nativeName)[0].common : 'N/A';
+  const currency = country.currencies ? Object.values(country.currencies).map(c => c.name).join(', ') : 'N/A';
+  const languages = country.languages ? Object.values(country.languages).join(', ') : 'N/A';
+
   return (
     <div>
       <Link to="/" className="inline-block bg-white dark:bg-gray-700 py-2 px-6 rounded shadow mb-8 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
@@ -41,16 +50,16 @@ const DetailPage = () => {
           <h1 className="text-3xl font-bold mb-6">{country.name.common}</h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <p><span className="font-semibold">Native Name:</span> {Object.values(country.name.nativeName)[0].common}</p>
+              <p><span className="font-semibold">Native Name:</span> {nativeName}</p>
               <p><span className="font-semibold">Population:</span> {country.population.toLocaleString()}</p>
               <p><span className="font-semibold">Region:</span> {country.region}</p>
               <p><span className="font-semibold">Sub Region:</span> {country.subregion}</p>
               <p><span className="font-semibold">Capital:</span> {country.capital ? country.capital[0] : 'N/A'}</p>
             </div>
             <div>
-              <p><span className="font-semibold">Top Level Domain:</span> {country.tld[0]}</p>
-              <p><span className="font-semibold">Currencies:</span> {Object.values(country.currencies).map(c => c.name).join(', ')}</p>
-              <p><span className="font-semibold">Languages:</span> {Object.values(country.languages).join(', ')}</p>
+              <p><span className="font-semibold">Top Level Domain:</span> {country.tld ? country.tld[0] : 'N/A'}</p>
+              <p><span className="font-semibold">Currencies:</span> {currency}</p>
+              <p><span className="font-semibold">Languages:</span> {languages}</p>
             </div>
           </div>
         </div>

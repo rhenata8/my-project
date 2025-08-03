@@ -14,17 +14,20 @@ const HomePage = () => {
     const fetchCountries = async () => {
       try {
         setLoading(true);
-        const data = await getAllCountries(); // <-- Gunakan fungsinya di sini
+        const data = await getAllCountries();
         setCountries(data);
+        setError(null); // Reset error jika berhasil
       } catch (error) {
-        // Tangani error
+        // PERBAIKAN: Tangani error dengan benar
+        console.error("Gagal mengambil data negara:", error);
+        setError('Gagal memuat data. Silakan coba muat ulang halaman.');
       } finally {
         setLoading(false);
       }
     };
 
     fetchCountries();
-  }, []); // Array kosong berarti efek ini hanya berjalan sekali saat komponen dimuat
+  }, []);// Array kosong berarti efek ini hanya berjalan sekali saat komponen dimuat
 
   // Logika untuk filter negara berdasarkan pencarian
   const filteredCountries = countries.filter(country =>
